@@ -1,0 +1,30 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    ports: ["5432:5432"]
+    environment:
+      POSTGRES_DB: legal_agents
+      POSTGRES_USER: legal
+      POSTGRES_PASSWORD: legal123
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+
+  agents:
+    build: ./services/agents
+    ports: 
+      - "8000:8000"
+      - "8080:8080"
+    env_file: ./services/agents/.env
+    depends_on: [db]
+
+  web:
+    build: ./services/web
+    ports: 
+      - "3000:3000"
+    environment:
+      AGENTS_API_URL: http://agents:8000
+    depends_on: [agents]
+
+volumes:
+  pgdata:
