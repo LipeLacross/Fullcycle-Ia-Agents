@@ -1,0 +1,63 @@
+
+Faça parte da construção da nova geração de aplicações orientadas a IA.
+Online e 100% gratuito, com vagas limitadas!
+24 A 26 DE NOVEMBRO
+Ao final do evento, você receberá um certificado da Faculdade Full Cycle de Tecnologia
+
+*E-mail
+*WhatsApp
+*Tempo de experiência em programação
+
+*Já sabe programar em alguma linguagem?
+Sim
+Não
+Quero participar
+Utilizar Prompt Engineering para minimizar erros no desenvolvimento com IA, gerar documentações para melhoria de contexto, correções de bugs e muito mais
+
+Sobre o evento
+O Full Cycle Tech Week: IA for Developers é um evento online e 100% gratuito. Em 3 dias você vai aprender, na prática, como aplicar IA de verdade nas suas aplicações e entender como:
+
+Aplicar metodologias e workflows para turbinar sua produtividade
+
+Desenvolver Agentes autônomos que tomam decisões e executam processos complexos
+
+O evento acontecerá 100% via Zoom com sessões práticas, tira-dúvidas e muito networking.
+
+Trabalhar com recursos avançados no Cursor
+
+Criar e consumir servidores MCPs
+
+Você verá na prática como:
+Desenvolver Agentes com Google ADK (Agent Development Kit)
+
+Utilizar o Docker MCP Toolkit
+
+Certificado
+Ao final do evento, você receberá um certificado de curso livre com carga horária de 10 horas da Faculdade Full Cycle de Tecnologia.
+
+Quer ir além dos prompts genéricos e aplicar IA de verdade
+
+Este evento é para quem:
+Quer acelerar as entregas com workflow inteligente
+
+Quer ver na prática o desenvolvimento de Agentes de IA
+
+Quer entender como IA está mudando o jogo no desenvolvimento
+
+Com quem você vai aprender
+Wesley Willians
+
+Fundador/CEO da Full Cycle.
+
+Possui graduação em Tecnologia e Mídias Digitais pela Pontifícia Universidade Católica de São Paulo, MBA Executivo em Gestão de Negócios pelo Ibmec e duas especializações pelo MIT (Empreendedorismo e Marketing Digital);
+
+
+
+Premiado como um dos 100 líderes em educação pelo "Fórum Global de Educação e Aprendizado".
+
+
+
+Microsoft MVP
+Google Developer Expert
+Docker Captain
+Copyright © Full Cycle – Todos os direitos reservados

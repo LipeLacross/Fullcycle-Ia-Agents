@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Demo — MBA Full Cycle</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #1c1c1c;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: center;
+            padding: 32px 20px 0;
+            background: #1c1c1c;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        header h1 span {
+            color: #fcca50;
+            font-weight: 400;
+        }
+
+        header p {
+            color: #999;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            border-bottom: 1px solid #353535;
+            padding: 0 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 32px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            background: transparent;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #999;
+        }
+
+        .tab-btn.active {
+            color: #ffcd00;
+            border-bottom-color: #ffcd00;
+        }
+
+        .tab-icon {
+            margin-right: 8px;
+        }
+
+        /* ── Tab Content ── */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ── Code / Question Section ── */
+        .example-section {
+            max-width: 900px;
+            margin: 24px auto;
+            padding: 0 20px;
+        }
+
+        .example-section h2 {
+            font-size: 0.8rem;
+            color: #ffcd00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .code-block {
+            background: #2b2b2b;
+            border: 1px solid #353535;
+            border-radius: 10px;
+            padding: 20px 24px;
+            font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #e0e0e0;
+        }
+
+        .code-block .keyword { color: #fcca50; }
+        .code-block .func { color: #ffcd00; }
+        .code-block .param { color: #44dd88; }
+        .code-block .op { color: #999; }
+        .code-block .ret { color: #fcca50; }
+        .code-block .number { color: #44dd88; }
+
+        .question-block {
+            background: #2b2b2b;
+            border: 1px solid #353535;
+            border-radius: 10px;
+            padding: 24px 28px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        .question-block .highlight {
+            color: #ffcd00;
+            font-weight: 600;
+        }
+
+        .answer-hint {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.8rem;
+        }
+
+        .answer-hint summary {
+            color: #666;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .answer-hint summary:hover {
+            color: #999;
+        }
+
+        .answer-hint p {
+            color: #44dd88;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* ── Run Button ── */
+        .run-btn {
+            display: block;
+            margin: 24px auto;
+            padding: 14px 48px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            border: 1px solid #fcca50;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #ffcd00;
+            color: #1c1c1c;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+        }
+
+        .run-btn:hover {
+            background: #fcca50;
+            box-shadow: 0 0 30px rgba(255, 205, 0, 0.3);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ── Grid ── */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding: 20px;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: #2b2b2b;
+            border: 1px solid #353535;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 300px;
+            transition: border-color 0.3s;
+        }
+
+        .card.loading { border-color: #ffcd00; }
+        .card.done { border-color: #22aa55; }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #353535;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .card-header h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* FullCycle card colors */
+        .card:nth-child(1) .card-header h3 { color: #999; }
+        .card:nth-child(2) .card-header h3 { color: #ffcd00; }
+        .card:nth-child(3) .card-header h3 { color: #44dd88; }
+        .card:nth-child(4) .card-header h3 { color: #3399ff; }
+
+        .badge {
+            font-size: 0.65rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card:nth-child(1) .badge { background: #353535; color: #999; }
+        .card:nth-child(2) .badge { background: #3a3000; color: #ffcd00; }
+        .card:nth-child(3) .badge { background: #1a3a1a; color: #44dd88; }
+        .card:nth-child(4) .badge { background: #1a2233; color: #3399ff; }
+
+        /* ── Card Body ── */
+        .card-body {
+            padding: 16px 20px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 0.8rem;
+            line-height: 1.7;
+        }
+
+        .card-body .placeholder {
+            color: #555;
+            font-style: italic;
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        /* ── Markdown styles ── */
+        .card-body h1, .card-body h2, .card-body h3 {
+            color: #fcca50;
+            margin: 14px 0 8px;
+            font-size: 0.85rem;
+        }
+
+        .card-body h2 { font-size: 0.9rem; }
+        .card-body p { margin-bottom: 8px; }
+
+        .card-body code {
+            background: #353535;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: #fcca50;
+        }
+
+        .card-body pre {
+            background: #1c1c1c;
+            border: 1px solid #353535;
+            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            overflow-x: auto;
+        }
+
+        .card-body pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.75rem;
+            color: #e0e0e0;
+        }
+
+        .card-body ul, .card-body ol {
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .card-body li { margin-bottom: 4px; }
+
+        .card-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 0.75rem;
+        }
+
+        .card-body th, .card-body td {
+            border: 1px solid #353535;
+            padding: 6px 10px;
+            text-align: left;
+        }
+
+        .card-body th {
+            background: #353535;
+            color: #ffcd00;
+        }
+
+        .card-body strong { color: #fff; }
+
+        .card-body blockquote {
+            border-left: 3px solid #ffcd00;
+            padding-left: 12px;
+            color: #999;
+            margin: 8px 0;
+        }
+
+        /* ── Stats & Timer ── */
+        .timer {
+            font-size: 0.7rem;
+            color: #666;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .stats {
+            padding: 8px 20px 12px;
+            border-top: 1px solid #353535;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #353535;
+            border-top-color: #ffcd00;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #353535; border-radius: 3px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 1200px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
+            .tabs { flex-wrap: wrap; }
+            .tab-btn { padding: 10px 20px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Prompt Engineering <span>— Code Review</span></h1>
+        <p>Mesmo modelo, 3 técnicas diferentes — veja a diferença</p>
+    </header>
+
+    <!-- ── Tabs ── -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('code')">
+            <span class="tab-icon">&lt;/&gt;</span>Code Review
+        </button>
+        <button class="tab-btn" onclick="switchTab('logic')">
+            <span class="tab-icon">&#x1f9e0;</span>Strawberry
+        </button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB 1: Code Review                                    -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="tab-content active" id="tab-code">
+        <div class="example-section">
+            <h2>Código sob análise</h2>
+            <div class="code-block">
+                <span class="keyword">def</span> <span class="func">aplicar_desconto</span>(<span class="param">preco</span>, <span class="param">desconto</span>):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;preco_final <span class="op">=</span> preco <span class="op">-</span> (preco <span class="op">*</span> desconto <span class="op">/</span> <span class="number">100</span>)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="ret">return</span> preco_final
+            </div>
+        </div>
+
+        <button class="run-btn" onclick="runAll('review')">EXECUTAR CODE REVIEW</button>
+
+        <div class="grid" id="grid-code">
+            <div class="card" id="card-review-simple">
+                <div class="card-header">
+                    <h3>Prompt Simples</h3>
+                    <span class="badge">sem técnica</span>
+                </div>
+                <div class="card-body"><p class="placeholder">Aguardando execução...</p></div>
+                <div class="stats">
+                    <span class="timer" id="timer-review-simple">—</span>
+                    <span class="tokens" id="tokens-review-simple">—</span>
+                </div>
+            </div>
+            <div class="card" id="card-review-cot">
+                <div class="card-header">
+                    <h3>Chain of Thought</h3>
+                    <span class="badge">passo a passo</span>
+                </div>
+                <div class="card-body"><p class="placeholder">Aguardando execução...</p></div>
+                <div class="stats">
+                    <span class="timer" id="timer-review-cot">—</span>
+                    <span class="tokens" id="tokens-review-cot">—</span>
+                </div>
+            </div>
+            <div class="card" id="card-review-react">
+                <div class="card-header">
+                    <h3>ReAct</h3>
+                    <span class="badge">reason + act</span>
+                </div>
+                <div class="card-body"><p class="placeholder">Aguardando execução...</p></div>
+                <div class="stats">
+                    <span class="timer" id="timer-review-react">—</span>
+                    <span class="tokens" id="tokens-review-react">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- TAB 2: Pegadinha Lógica                               -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div class="tab-content" id="tab-logic">
+        <div class="example-section">
+            <h2>Pergunta</h2>
+            <div class="question-block">
+                Quantas vezes a letra <span class="highlight">'r'</span> aparece<br>
+                na palavra <span class="highlight">'strawberry'</span>?
+            </div>
+            <details class="answer-hint">
+                <summary>Ver resposta correta</summary>
+                <p>3 — st<u>r</u>awbe<u>r</u><u>r</u>y</p>
+            </details>
+        </div>
+
+        <button class="run-btn" onclick="runAll('logic')">EXECUTAR CONTAGEM</button>
+
+        <div class="grid" id="grid-logic">
+            <div class="card" id="card-logic-simple">
+                <div class="card-header">
+                    <h3>Prompt Simples</h3>
+                    <span class="badge">sem técnica</span>
+                </div>
+                <div class="card-body"><p class="placeholder">Aguardando execução...</p></div>
+                <div class="stats">
+                    <span class="timer" id="timer-logic-simple">—</span>
+                    <span class="tokens" id="tokens-logic-simple">—</span>
+                </div>
+            </div>
+            <div class="card" id="card-logic-cot">
+                <div class="card-header">
+                    <h3>Chain of Thought</h3>
+                    <span class="badge">passo a passo</span>
+                </div>
+                <div class="card-body"><p class="placeholder">Aguardando execução...</p></div>
+                <div class="stats">
+                    <span class="timer" id="timer-logic-cot">—</span>
+                    <span class="tokens" id="tokens-logic-cot">—</span>
+                </div>
+            </div>
+            <div class="card" id="card-logic-react">
+                <div class="card-header">
+                    <h3>ReAct</h3>
+                    <span class="badge">reason + act</span>
+                </div>
+                <div class="card-body"><p class="placeholder">Aguardando execução...</p></div>
+                <div class="stats">
+                    <span class="timer" id="timer-logic-react">—</span>
+                    <span class="tokens" id="tokens-logic-react">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const techniques = ['simple', 'cot', 'react'];
+
+        // ── Tab switching ──
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            // Highlight the clicked tab
+            const btns = document.querySelectorAll('.tab-btn');
+            if (tab === 'code') btns[0].classList.add('active');
+            else btns[1].classList.add('active');
+        }
+
+        // ── Run all techniques ──
+        async function runAll(apiPrefix) {
+            // Find the active tab's button
+            const activeTab = document.querySelector('.tab-content.active');
+            const btn = activeTab.querySelector('.run-btn');
+            btn.disabled = true;
+            btn.textContent = 'EXECUTANDO...';
+
+            const prefix = apiPrefix === 'review' ? 'review' : 'logic';
+
+            // Reset cards
+            techniques.forEach(t => {
+                const card = document.getElementById(`card-${prefix}-${t}`);
+                const body = card.querySelector('.card-body');
+                card.className = 'card loading';
+                body.innerHTML = '<span class="spinner"></span> Analisando...';
+                document.getElementById(`timer-${prefix}-${t}`).textContent = '0.0s';
+                document.getElementById(`tokens-${prefix}-${t}`).textContent = '';
+            });
+
+            // Start all 4 in parallel
+            const promises = techniques.map(t => runOne(prefix, t));
+            await Promise.all(promises);
+
+            btn.disabled = false;
+            btn.textContent = apiPrefix === 'review' ? 'EXECUTAR NOVAMENTE' : 'EXECUTAR NOVAMENTE';
+        }
+
+        async function runOne(prefix, technique) {
+            const card = document.getElementById(`card-${prefix}-${technique}`);
+            const body = card.querySelector('.card-body');
+            const timerEl = document.getElementById(`timer-${prefix}-${technique}`);
+
+            const start = performance.now();
+            const timerInterval = setInterval(() => {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+                timerEl.textContent = `${elapsed}s`;
+            }, 100);
+
+            try {
+                const res = await fetch(`/api/${prefix}/${technique}`, { method: 'POST' });
+                const data = await res.json();
+
+                clearInterval(timerInterval);
+                const elapsed = ((performance.now() - start) / 1000).toFixed(1);
+                timerEl.textContent = `${elapsed}s`;
+
+                card.className = 'card done';
+                body.innerHTML = marked.parse(data.response);
+
+                const charCount = data.response.length;
+                document.getElementById(`tokens-${prefix}-${technique}`).textContent = `${charCount} chars`;
+            } catch (err) {
+                clearInterval(timerInterval);
+                card.className = 'card';
+                body.innerHTML = `<p style="color: #ff5555;">Erro: ${err.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
