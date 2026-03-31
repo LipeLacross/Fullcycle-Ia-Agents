@@ -34,7 +34,14 @@ Repositório com projetos demonstrativos desenvolvidos durante a **TechWeek de I
 
 ### Certificado
 
-Ao final do evento, os participantes receberam um certificado de curso livre com carga horária de **10 horas** da Faculdade Full Cycle de Tecnologia.
+Ao final do evento, os participantes receberam um certificado de curso livre com carga horária de **8 horas** da Faculdade Full Cycle de Tecnologia.
+
+---
+
+## 📚 Materiais do Evento
+
+- [📺 Aulas e Links](Tech%20Week%20IA%20for%20Devs/README.md)
+- [📊 Comparação de Frameworks](COMPARISON.md)
 
 ---
 
